@@ -34,6 +34,10 @@ class User extends Authenticatable implements PasskeyUser
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
 
+    public static function create(array $array)
+    {
+    }
+
     /**
      * Get the attributes that should be cast.
      *
