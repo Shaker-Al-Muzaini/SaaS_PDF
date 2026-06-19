@@ -51,6 +51,8 @@ class User extends Authenticatable implements PasskeyUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
+            'subscription_ends_at' => 'datetime',
+            'pdf_count_rest_at' => 'datetime',
         ];
     }
 
