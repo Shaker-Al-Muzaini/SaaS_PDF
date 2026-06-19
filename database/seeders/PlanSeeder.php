@@ -19,7 +19,7 @@ class PlanSeeder extends Seeder
             'des' => 'Plan 1 description',
             'price' => 0,
             'pdf_limit' => 10,
-            'featured' => json_encode([
+            'features' => json_encode([
                 '10 PDF summaries per month',
                 '30 PDF summaries per month',
                 '60 PDF summaries per month',
@@ -32,7 +32,7 @@ class PlanSeeder extends Seeder
             'des' => 'Plan 2 description',
             'price' => 12,
             'pdf_limit' => 40,
-            'featured' => json_encode([
+            'features' => json_encode([
                 '7 PDF summaries per month',
                 '90 PDF summaries per month',
                 '20 PDF summaries per month',

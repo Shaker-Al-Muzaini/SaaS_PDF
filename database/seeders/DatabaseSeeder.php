@@ -4,34 +4,40 @@ namespace Database\Seeders;
 
 use App\Models\Plan;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
+        // 1. تشغيل سيذر الخطط أولاً
         $this->call(PlanSeeder::class);
 
+        // 2. إنشاء مدير النظام
         User::create([
             'name' => 'Test admin',
             'email' => 'admin@example.com',
             'password' => bcrypt('password'),
             'role' => 'admin',
         ]);
-
-        $basicPlan = Plan::where('slug', 'basic')->first();
         User::create([
-            'name' => 'Test User 2 ',
+            'name' => 'user test',
+            'email' => 'user@example.com',
+            'password' => bcrypt('password'),
+            'role' => 'user',
+        ]);
+
+        // 3. جلب الخطة الأولى (plan-1) لأنها الموجودة في الـ Seeder لديك
+        $basicPlan = Plan::where('slug', 'plan-1')->first();
+        User::create([
+            'name' => 'Test User 2',
             'email' => 'test2@example.com',
             'password' => bcrypt('password'),
             'role' => 'user',
-            'plan_count' =>2,
+            'pdf_count' => 2, // <-- تم التعديل هنا ليتوافق مع الـ Migration
             'plan_id' => $basicPlan?->id,
             'pdf_count_rest_at' => now()->addMonth()->format('Y-m-d'),
         ]);

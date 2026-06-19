@@ -7,6 +7,8 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -27,16 +29,16 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'role',
+    'plan_id', 'plan_count', 'pdf_count_rest_at',
+    'stripe_subscription_id',
+    'subscription_ends_at',
+])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
-
-    public static function create(array $array)
-    {
-    }
 
     /**
      * Get the attributes that should be cast.
@@ -51,4 +53,74 @@ class User extends Authenticatable implements PasskeyUser
             'two_factor_confirmed_at' => 'datetime',
         ];
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+        // Auto-assign Basic plan to new users
+        static::creating(function ($user) {
+            if (! $user->plan_id) {
+                $basicPlan = Plan::where('slug', 'basic')->first();
+                if ($basicPlan) {
+                    $user->plan_id = $basicPlan->id;
+                    $user->pdf_count = 0;
+                    $user->pdf_count_reset_at = now()->addMonth();
+                }
+            }
+        });
+
+    }
+
+    public function plan(): BelongsTo
+    {
+        return $this->belongsTo(Plan::class);
+    }
+
+    public function pdfSummaries(): HasMany
+    {
+        return $this->hasMany(pdfSummary::class);
+    }
+
+    public function canSummarizePdf(): bool
+    {
+        if (! $this->plan) {
+            return false;
+        }
+
+        if ($this->pdf_count_reset_at && $this->pdf_count_reset_at->isPast()) {
+            $this->update([
+                'pdf_count' => 0,
+                'pdf_count_reset_at' => now()->addMonth(), // ملاحظة: يفضل إضافة شهر جديد هنا
+            ]);
+        }
+        if (! $this->plan->pdf_limit < 0) {
+            return true;
+        }
+
+        return $this->pdf_count < $this->plan->pdf_limit;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function hasActiveSubscription(): bool
+    {
+        if (! $this->stripe_subscription_id) {
+            return false;
+        }
+        // إذا كان لديك حقل لتاريخ انتهاء الاشتراك في جدول المستخدمين
+        if ($this->subscription_ends_at && $this->subscription_ends_at->isPast()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function canChangePlan(): bool
+    {
+        return $this->hasActiveSubscription();
+    }
+
 }
