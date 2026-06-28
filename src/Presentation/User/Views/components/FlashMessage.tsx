@@ -1,4 +1,4 @@
-import { CheckCircle2, AlertCircle } from 'lucide-react';
+import { CheckCircle2, X } from 'lucide-react';
 
 interface FlashMessageProps {
     flash?: {
@@ -23,7 +23,7 @@ export default function FlashMessage({ flash }: FlashMessageProps) {
 
             {flash?.error && (
                 <div className="bg-red-500 rounded-xl shadow-2xl flex items-center gap-2 px-6 py-4 text-white">
-                    <AlertCircle className="h-6 w-6" />
+                    <X className="h-6 w-6" />
                     <p className="font-semibold">{flash.error}</p>
                 </div>
             )}

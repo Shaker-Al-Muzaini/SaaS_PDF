@@ -1,7 +1,7 @@
 import { Link } from '@inertiajs/react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import { AlertCircle, CheckCircle2, Copy, Download, FileText, History } from 'lucide-react';
+import { X, CheckCircle2, Copy, Download, FileText, History } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 interface SummaryModalProps {
@@ -83,7 +83,7 @@ return;
                             </div>
                         </div>
                         <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/20 transition-colors">
-                            <AlertCircle className="h-6 w-6 text-white" />
+                            <X className="h-6 w-6 text-white" />
                         </button>
                     </div>
                 </div>
@@ -147,7 +147,7 @@ return;
                                 href="/history"
                                 className="flex items-center gap-2 px-6 py-3 rounded-xl border-2 border-violet-600 text-violet-600 dark:text-violet-400 font-medium hover:bg-violet-50 dark:hover:bg-violet-950/30 transition-colors"
                             >
-                                <History className="h-5 w-5" /> History
+                                <History className="h-5 w-5" /> View History
                             </Link>
                         </div>
                     </div>

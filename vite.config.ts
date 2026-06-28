@@ -10,7 +10,8 @@ import { defineConfig } from 'vite';
 export default defineConfig({
     resolve: {
         alias: {
-            '@': path.resolve(__dirname, './src'),
+            // تم تعديل هذا السطر ليوجه إلى مجلد الموارد الفعلي js بدلاً من src
+            '@': path.resolve(__dirname, './resources/js'),
             '@Presentation': path.resolve(__dirname, './src/Presentation'),
         },
     },

@@ -5,46 +5,48 @@ import { initializeTheme } from '@/hooks/use-appearance';
 import AppLayout from '@/layouts/app-layout';
 import AuthLayout from '@/layouts/auth-layout';
 import SettingsLayout from '@/layouts/settings/layout';
+import React from 'react';
 
-// سطر فارغ إجباري هنا حل المشكلة الأولى
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = (import.meta.env.VITE_APP_NAME as string) || 'Laravel';
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
-    resolve: (name) => {
-        const pages = import.meta.glob('../../src/Presentation/**/*.tsx', { eager: true });
-        const page = pages[`../../src/Presentation/${name}.tsx`] as any;
+    resolve: async (name: string) => {
+        // تحديد نوع المصفوفة لـ Vite Glob
+        const srcPages = import.meta.glob<any>('../../src/Presentation/**/*.tsx');
+        const defaultPages = import.meta.glob<any>('./Pages/**/*.tsx');
 
-        const  component = page?.default ?? page;
+        let page: any;
+        let path: string;
 
-        // 👇 هنا تحط اللوجيك تبع layout
-        if (name.endsWith('welcome')) {
+        if (name.includes('Views/')) {
+            path = `../../src/Presentation/${name}.tsx`;
+            if (!srcPages[path]) throw new Error(`DDD Page not found: ${path}`);
+            page = await srcPages[path]();
+        } else {
+            path = `./Pages/${name}.tsx`;
+            if (!defaultPages[path]) throw new Error(`Default Page not found: ${path}`);
+            page = await defaultPages[path]();
+        }
+
+        const component = page?.default ?? page;
+
+        // تطبيق الـ Layouts مع تجنب أخطاء النوع
+        if (name.endsWith('welcome') || name.endsWith('Welcome')) {
             component.layout = undefined;
         } else if (name.includes('/Views/pages/auth/')) {
-            component.layout = (page: any) => <AuthLayout>{page}</AuthLayout>;
+            component.layout = (p: React.ReactNode) => <AuthLayout>{p}</AuthLayout>;
         } else if (name.includes('/Views/pages/settings/')) {
-            component.layout = (page: any) => (
+            component.layout = (p: React.ReactNode) => (
                 <AppLayout>
-                    <SettingsLayout>{page}</SettingsLayout>
+                    <SettingsLayout>{p}</SettingsLayout>
                 </AppLayout>
             );
         } else {
-            component.layout = (page: any) => <AppLayout>{page}</AppLayout>;
+            component.layout = (p: React.ReactNode) => <AppLayout>{p}</AppLayout>;
         }
 
         return component;
-    },
-    layout: (name) => {
-        switch (true) {
-            case name.endsWith('welcome'):
-                return null;
-            case name.includes('/Views/pages/auth/'):
-                return AuthLayout;
-            case name.includes('/Views/pages/settings/'):
-                return [AppLayout, SettingsLayout];
-            default:
-                return AppLayout;
-        }
     },
     strictMode: true,
     withApp(app) {
