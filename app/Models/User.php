@@ -66,7 +66,7 @@ class User extends Authenticatable implements PasskeyUser
                 if ($basicPlan) {
                     $user->plan_id = $basicPlan->id;
                     $user->pdf_count = 0;
-                    $user->pdf_count_reset_at = now()->addMonth();
+                    $user->pdf_count_rest_at = now()->addMonth();
                 }
             }
         });
@@ -89,10 +89,10 @@ class User extends Authenticatable implements PasskeyUser
             return false;
         }
 
-        if ($this->pdf_count_reset_at && $this->pdf_count_reset_at->isPast()) {
+        if ($this->pdf_count_rest_at && $this->pdf_count_rest_at->isPast()) {
             $this->update([
                 'pdf_count' => 0,
-                'pdf_count_reset_at' => now()->addMonth(), // ملاحظة: يفضل إضافة شهر جديد هنا
+                'pdf_count_rest_at' => now()->addMonth(), // ملاحظة: يفضل إضافة شهر جديد هنا
             ]);
         }
         if (! $this->plan->pdf_limit < 0) {
@@ -124,5 +124,4 @@ class User extends Authenticatable implements PasskeyUser
     {
         return $this->hasActiveSubscription();
     }
-
 }
