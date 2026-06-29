@@ -5,8 +5,8 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-} from '@/components/ui/sidebar';
-import { toUrl } from '@/lib/utils';
+} from '../../../src/Presentation/Shared/components/ui/sidebar';
+import { toUrl } from '../../../src/Presentation/Shared/lib/utils';
 import type { NavItem } from '@/types';
 
 export function NavFooter({

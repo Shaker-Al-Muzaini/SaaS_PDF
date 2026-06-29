@@ -27,3 +27,9 @@ Route::get('/', function () {
         'userStats' => $userStats,
     ]);
 })->name('home');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', function () {
+        return Inertia::render('User/Views/pages/dashboard');
+    })->name('dashboard');
+});

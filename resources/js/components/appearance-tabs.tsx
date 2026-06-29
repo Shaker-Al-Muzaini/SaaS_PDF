@@ -3,7 +3,7 @@ import { Monitor, Moon, Sun } from 'lucide-react';
 import type { HTMLAttributes } from 'react';
 import type { Appearance } from '@/hooks/use-appearance';
 import { useAppearance } from '@/hooks/use-appearance';
-import { cn } from '@/lib/utils';
+import { cn } from '../../../src/Presentation/Shared/lib/utils';
 
 export default function AppearanceToggleTab({
     className = '',

@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect, type DragEvent } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import { CheckIcon, SparklesIcon, ZapIcon, RocketIcon, ArrowRightIcon, StarIcon } from 'lucide-react';
-import FlashMessage from '../components/FlashMessage';
-import SummaryModal from '../components/SummaryModal';
-import SummaryOptionsModal from '../components/SummaryOptionsModal';
+import FlashMessage from '../../../Shared/components/FlashMessage';
+import SummaryModal from '../../../Shared/components/SummaryModal';
+import SummaryOptionsModal from '../../../Shared/components/SummaryOptionsModal';
 
 interface Plan {
     id: number;

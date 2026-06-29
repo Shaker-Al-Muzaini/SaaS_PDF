@@ -13,6 +13,8 @@ export default defineConfig({
             // تم تعديل هذا السطر ليوجه إلى مجلد الموارد الفعلي js بدلاً من src
             '@': path.resolve(__dirname, './resources/js'),
             '@Presentation': path.resolve(__dirname, './src/Presentation'),
+            '@Shared': path.resolve(__dirname, './src/Presentation/Shared'), // الاختصار الجديد
+            '@shared': path.resolve(__dirname, './src/Presentation/Shared'), // اختصار إضافي بالصغير للاحتياط
         },
     },
     plugins: [
