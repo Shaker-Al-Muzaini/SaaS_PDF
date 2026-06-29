@@ -311,3 +311,79 @@ export default function Welcome({ plans = [], canRegister, auth, userStats, flas
                                                         />
                                                     </svg>
                                                 </div>
+                                            <h3 className="mb-4 text-4xl font-black bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
+                                                {limitReached ? ' Limit Reached' :pdf ? pdf.name : 'Drop your PDF here ' }
+
+</h3>
+
+<p className="text-slate-600"> {auth?.user ? (limitReached ? 'please upgrade your plan' : 'or click to browse') : 'Sign up to start' }</p>
+                                                {! auth?.user && (
+                                                    <Link href="/register" className="mt-8 inline-flex items-center gap-3 px-12 py -5 rounded-xl  bg-gradient-to-r from-violet-600 to-purple-600 text-white text-xl font-bold hover:scale-105 transition-transform">
+                                                        <SparklesIcon className="h-7 w-7" />Sign up to start<ArrowRightIcon className="h-6 w-6" />
+                                                    </Link>)}
+                                            </>
+                                        )}
+                                    </div></div></div></div></section>
+
+                    {/* Pricing Section */}
+                    {auth?.user && safePlans.length > 0 && (
+                        <section className="relative py-20 px-4 bg-white/50 backdrop-blur-sm">
+                            <div className="container mx-auto max-w-7xl">
+                                <div className="text-center mb-16">
+                                    <h2 className="text-5xl font-black mb-4 bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text">
+
+                                        <div className="relative group p-8 rounded-3xl bg-white border border-slate-100 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col justify-between">
+
+                                            {plans.slug === 'standard' && (
+                                                <span className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-xs font-bold rounded-full shadow-md tracking-wider uppercase">
+                Most Popular
+              </span>
+                                            )}
+
+                                            {isCurrentPlan && (
+                                                <span className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-emerald-500 text-white text-xs font-bold rounded-full shadow-md tracking-wider uppercase">
+                Current Plan
+              </span>
+                                            )}
+
+                                            <div className="flex items-center justify-center h-12 w-12 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white shadow-lg group-hover:scale-110 transition-transform">
+                                                {getPlanIcon(plans.slug)}
+                                            </div>
+
+                                            <h3 className="text-3xl font-black mb-3">{plans.name}</h3>
+                                            <p className="text-slate-600 mb-6">{plans.description}</p>
+
+                                            {/* سعر الخطة */}
+                                            <div className="flex items-baseline gap-2 mb-6">
+              <span className="text-5xl font-black bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
+                ${plans.price}
+              </span>
+                                                <span className="text-xl text-slate-600">/month</span>
+                                            </div>
+
+                                            <ul className="space-y-4 mb-8">
+                                                {plans.features.map((feature: string, idx: number) => (
+                                                    <li key={idx} className="flex items-start gap-3">
+                                                        <div className="h-6 w-6 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center">
+                                                            <CheckIcon className="h-4 w-4 text-white" />
+                                                        </div>
+                                                        <span className="text-slate-700">{feature}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+
+                                            <button
+                                                disabled={isCurrentPlan}
+                                                className={`w-full py-4 rounded-xl font-bold text-lg transition-all ${
+                                                    isCurrentPlan
+                                                        ? 'bg-slate-200 text-slate-500 cursor-not-allowed'
+                                                        : 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:scale-105'
+                                                }`}
+                                            >
+                                                {isCurrentPlan ? 'Active Plan' : plans.slug === 'basic' ? 'Get Started Free' : 'Subscribe Now'}
+                                            </button>
+                                        </div>
+
+                                </div>
+                            </div>
+
