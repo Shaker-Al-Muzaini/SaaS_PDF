@@ -121,7 +121,7 @@ class SubscriptionController extends Controller
                 ],
                 'product_data' => [
                     'name' => $plan->name.' Plan',
-                    'description' => $plan->description,
+                    'des' => $plan->description,
                 ],
             ]);
 
@@ -231,7 +231,7 @@ class SubscriptionController extends Controller
         Log::info('cancel request:', $request->all());
         $user = $request->user();
 
-        if (!$user->stripe_subscription_id) {
+        if (! $user->stripe_subscription_id) {
             return back()->with('error', 'No active subscription found');
         }
 
@@ -246,8 +246,57 @@ class SubscriptionController extends Controller
 
             return back()->with('success', 'Subscription will be cancelled at the end of the billing period');
         } catch (\Exception $e) {
-            return back()->with('error', 'Failed to cancel subscription: ' . $e->getMessage());
+            return back()->with('error', 'Failed to cancel subscription: '.$e->getMessage());
         }
     }
 
+    public function changePlan(Request $request)
+    {
+        Log::info('changePlan request:', $request->all());
+        $request->validate([
+            'plan_slug' => 'required|exists:plans,slug',
+        ]);
+
+        $user = $request->user();
+        $newPlan = Plan::where('slug', $request->plan_slug)->firstOrFail();
+
+        if (! $user->stripe_subscription_id) {
+            return back()->with('error', 'No active subscription found');
+        }
+
+        try {
+            $stripe = new StripeClient(config('services.stripe.secret'));
+            $subscription = $stripe->subscriptions->retrieve($user->stripe_subscription_id);
+
+            // Update the subscription with the new plan
+            $stripe->subscriptions->update($user->stripe_subscription_id, [
+                'items' => [
+                    [
+                        'id' => $subscription->items->data[0]->id,
+                        'price_data' => [
+                            'currency' => 'usd',
+                            'product_data' => [
+                                'name' => $newPlan->name.' Plan',
+                            ],
+                            'unit_amount' => $newPlan->price * 100,
+                            'recurring' => [
+                                'interval' => 'month',
+                            ],
+                        ],
+                    ],
+                ],
+                'proration_behavior' => 'create_prorations',
+            ]);
+
+            $user->update([
+                'plan_id' => $newPlan->id,
+                'pdf_count' => 0,
+                'pdf_count_reset_at' => now()->addMonth(),
+            ]);
+
+            return back()->with('success', 'Plan changed successfully!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to change plan: '.$e->getMessage());
+        }
+    }
 }
