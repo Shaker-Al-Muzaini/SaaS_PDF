@@ -437,7 +437,7 @@ return (
             {/* Footer */}
             <footer className="py-12 px-4 bg-white border-t">
                 <div className="container mx-auto max-w-6xl text-center">
-                    <p className="text-slate-600">© 2024 PDF Summarizer. All rights reserved.</p>
+                    <p className="text-slate-600">© 2026 PDF Summarizer. All rights reserved.</p>
                 </div>
             </footer>
         </div>
