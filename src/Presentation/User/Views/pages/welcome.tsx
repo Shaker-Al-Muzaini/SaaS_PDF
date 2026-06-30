@@ -3,7 +3,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { CheckIcon, SparklesIcon, ZapIcon, RocketIcon, ArrowRightIcon, StarIcon } from 'lucide-react';
 import FlashMessage from '../../../Shared/components/FlashMessage';
 import SummaryModal from '../../../Shared/components/SummaryModal';
-import SummaryOptionsModal from '../../../Shared/components/SummaryOptionsModal';
+import SummaryOptionsModal from '../../../Shared/components/SummaryOPtionsModal';
 
 interface Plan {
     id: number;

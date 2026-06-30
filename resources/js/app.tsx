@@ -15,7 +15,6 @@ const appName = (import.meta.env.VITE_APP_NAME as string) || 'Laravel';
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
     resolve: async (name: string) => {
-        // الـ Glob paths يجب أن تظل مسارات نسبية نصية صريحة لتتعرف عليها أداة Vite أثناء البناء
         const srcPages = import.meta.glob<any>('../../src/Presentation/**/*.tsx');
         const defaultPages = import.meta.glob<any>('./Pages/**/*.tsx');
 

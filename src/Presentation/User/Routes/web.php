@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Plan;
+use Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -33,3 +34,35 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('User/Views/pages/dashboard');
     })->name('dashboard');
 });
+
+Route::get('/checkout/{slug}', function ($slug) {
+    $plan = Plan::where('slug', $slug)->where('is_active', true)->firstOrFail();
+
+    return Inertia::render('User/Views/pages/checkout', [
+        'plan' => $plan,
+        'stripeKey' => config('services.stripe.key'),
+    ]);
+})->name('checkout');
+
+Route::post('/subscription/create-payment-intent', [SubscriptionController::class, 'createPaymentIntent'])
+    ->name('subscription.createPaymentIntent');
+
+Route::post('/subscription/subscribe/{slug}', [SubscriptionController::class, 'subscribe'])
+    ->name('subscription.subscribe');
+
+Route::post('/subscription/create-checkout-session/{slug}', [SubscriptionController::class,'createCheckoutSession'])
+    ->name('subscription.checkout');
+
+Route::get('/subscription/success', [SubscriptionController::class, 'success'])
+    ->name('subscription.success');
+
+Route::post('/subscription/cancel', [SubscriptionController::class, 'cancel'])
+    ->name('subscription.cancel');
+
+Route::post('/subscription/change-plan', [SubscriptionController::class, 'changePlan'])
+    ->name('subscription.changePlan');
+
+
+
+
+
