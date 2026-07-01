@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { CheckIcon, CreditCardIcon, LockIcon, ArrowLeftIcon, SparklesIcon } from 'lucide-react';
 
 interface Plan {
@@ -18,6 +18,7 @@ interface Props {
 }
 
 export default function Checkout({ plan,stripeKey }: Props) {
+    const { flash } = usePage().props as any;
     // Parse features if they're stored as JSON string
     const safePlan = {
         ...plan,
@@ -128,6 +129,12 @@ export default function Checkout({ plan,stripeKey }: Props) {
                                     <CreditCardIcon className="h-6 w-6 text-violet-600 dark:text-violet-400" />
                                     Payment Details
                                 </h2>
+
+                                {flash?.error && (
+                                    <div className="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-950/20 border border-red-200/60 dark:border-red-900/40 text-sm text-red-800 dark:text-red-300 font-medium">
+                                        {flash.error}
+                                    </div>
+                                )}
 
                                 <button
                                     onClick={handlePayment}

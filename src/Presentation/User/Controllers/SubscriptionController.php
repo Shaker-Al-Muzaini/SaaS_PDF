@@ -160,12 +160,26 @@ class SubscriptionController extends Controller
 
     public function createCheckoutSession(Request $request, $slug)
     {
-        // Log::info('createCheckoutSession slug:', $slug);
-        Log::info('createCheckoutSession request:', $request->all());
-        $plan = Plan::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        Log::info('🟢 createCheckoutSession - request data', $request->all());
+
+        // 1️⃣ Retrieve the plan safely
+        $plan = Plan::where('slug', $slug)->where('is_active', true)->first();
+        if (!$plan) {
+            Log::warning("⚠️ Plan not found or inactive: {$slug}");
+            return back()->with('error', 'الخطة غير موجودة أو غير مفعّلة.');
+        }
+
+        // 2️⃣ Get the authenticated user
         $user = $request->user();
 
+        // 3️⃣ Verify Stripe secret is configured
+        if (!config('services.stripe.secret')) {
+            Log::error('❌ Stripe secret key missing in .env');
+            return back()->with('error', 'إعدادات Stripe غير مكتملة. يرجى مراجعة ملف .env.');
+        }
+
         try {
+            // 4️⃣ Create Stripe Checkout Session
             $session = Session::create([
                 'payment_method_types' => ['card'],
                 'line_items' => [[
@@ -174,7 +188,7 @@ class SubscriptionController extends Controller
                         'product_data' => [
                             'name' => $plan->name,
                         ],
-                        'unit_amount' => $plan->price * 100, // Convert to cents
+                        'unit_amount' => $plan->price * 100, // cents
                         'recurring' => [
                             'interval' => 'month',
                         ],
@@ -182,8 +196,8 @@ class SubscriptionController extends Controller
                     'quantity' => 1,
                 ]],
                 'mode' => 'subscription',
-                'success_url' => route('subscription.success').'?session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url' => route('checkout', ['slug' => $slug]),
+                'success_url' => route('subscription.success') . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url'  => route('checkout', ['slug' => $slug]),
                 'customer_email' => $user->email,
                 'client_reference_id' => $user->id,
                 'metadata' => [
@@ -192,9 +206,13 @@ class SubscriptionController extends Controller
                 ],
             ]);
 
+            Log::info('✅ Checkout Session created successfully', ['url' => $session->url]);
+
+            // 5️⃣ Redirect the browser to Stripe Checkout via Inertia
             return Inertia::location($session->url);
         } catch (\Exception $e) {
-            return back()->with('error', $e->getMessage());
+            Log::error('❌ Checkout Session creation failed', ['msg' => $e->getMessage()]);
+            return back()->with('error', 'خطأ أثناء إنشاء جلسة الدفع: ' . $e->getMessage());
         }
     }
 
