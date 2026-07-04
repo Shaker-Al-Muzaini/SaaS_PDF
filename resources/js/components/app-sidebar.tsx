@@ -57,18 +57,18 @@ export function AppSidebar() {
 
     const mainNavItems = isAdmin ? adminNavItems : userNavItems;
 
-    const footerNavItems: NavItem[] = [
-        {
-            title: 'Repository',
-            href: 'https://github.com',
-            icon: Folder,
-        },
-        {
-            title: 'Documentation',
-            href: 'https://laravel.com',
-            icon: BookOpen,
-        },
-    ];
+    // const footerNavItems: NavItem[] = [
+        // {
+        //     title: 'Repository',
+        //     href: 'https://github.com',
+        //     icon: Folder,
+        // },
+        // {
+        //     title: 'Documentation',
+        //     href: 'https://laravel.com',
+        //     icon: BookOpen,
+        // },
+    // ];
 
     const handleCancelSubscription = async () => {
         if (!confirm('Are you sure you want to cancel your subscription? You will retain access until the end of your billing period.')) {
@@ -156,7 +156,7 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} />
+                {/*<NavFooter  />*/}
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

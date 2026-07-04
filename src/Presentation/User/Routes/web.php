@@ -29,8 +29,6 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-
-
 Route::get('/checkout/{slug}', function ($slug) {
     $plan = Plan::where('slug', $slug)->where('is_active', true)->firstOrFail();
 
@@ -40,7 +38,7 @@ Route::get('/checkout/{slug}', function ($slug) {
     ]);
 })->name('checkout');
 
-Route::post('/subscription/create-payment-intent', [SubscriptionController::class,'createPaymentIntent'])
+Route::post('/subscription/create-payment-intent', [SubscriptionController::class, 'createPaymentIntent'])
     ->name('subscription.createPaymentIntent');
 
 Route::post('/subscription/subscribe/{slug}', [SubscriptionController::class, 'subscribe'])
@@ -57,8 +55,11 @@ Route::post('/subscription/cancel', [SubscriptionController::class, 'cancel'])
 Route::post('/subscription/change-plan', [SubscriptionController::class, 'changePlan'])
     ->name('subscription.changePlan');
 
+Route::get('/history', function () {
+    $user = auth()->user();
+    $summaries = $user->pdfSummaries()->latest()->paginate(10);
 
-
-
-
-
+    return Inertia::render('User/Views/pages/history', [
+        'summaries' => $summaries,
+    ]);
+})->name('history');
