@@ -1,11 +1,11 @@
 <?php
 
-
 use App\Models\PdfSummary;
 use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Presentation\Admin\Controllers\AdminController;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
@@ -18,10 +18,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Add admin statistics if user is admin
         if ($user->isAdmin()) {
             $data['adminStats'] = [
-                'totalUsers' =>User::count(),
-                'activeSubscriptions' =>User::whereNotNull('stripe_subscription_id')->count(),
-                'totalPdfs' =>PdfSummary::count(),
-                'plans' =>Plan::withCount('users')->get(),
+                'totalUsers' => User::count(),
+                'activeSubscriptions' => User::whereNotNull('stripe_subscription_id')->count(),
+                'totalPdfs' => PdfSummary::count(),
+                'plans' => Plan::withCount('users')->get(),
             ];
         } else {
             // Add user statistics
@@ -35,4 +35,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         return Inertia::render('User/Views/pages/dashboard', $data);
     })->name('dashboard');
+
+    Route::get('admin/users', [AdminController::class, 'users'])->name('admin.users');
+
+    Route::put('/admin/users/{user}/plan',[AdminController::class, 'updateUserPlan'])
+        ->name('admin.users.update-plan');
+
+
 });

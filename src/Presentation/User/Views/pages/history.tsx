@@ -15,7 +15,6 @@ interface SummaryCardProps {
     formatDate: (dateString: string) => string;
 }
 
-// 2. مكون بطاقة الملخص (SummaryCard Component)
 function SummaryCard({ summary, formatDate }: SummaryCardProps) {
     const [exporting, setExporting] = useState<boolean>(false);
 
@@ -67,7 +66,6 @@ function SummaryCard({ summary, formatDate }: SummaryCardProps) {
 
         document.body.appendChild(exportContainer);
 
-        // انتظار بسيط لضمان تعرف الـ DOM على العنصر
         await new Promise<void>(resolve => setTimeout(resolve, 100));
 
         try {
@@ -162,7 +160,6 @@ function SummaryCard({ summary, formatDate }: SummaryCardProps) {
     );
 }
 
-// 3. المكون الرئيسي للصفحة (History Page Component)
 export default function History({ summaries }: { summaries: { data: Summary[] } }) {
 
     // دالة لتنسيق وعرض التاريخ بشكل منظم
@@ -181,7 +178,6 @@ export default function History({ summaries }: { summaries: { data: Summary[] } 
                 <p className="text-sm text-muted-foreground">View and manage your PDF summaries</p>
             </div>
 
-            {/* التحقق من وجود بيانات داخل مصفوفة pagination لمنع انهيار الصفحة */}
             {summaries && summaries.data && summaries.data.length > 0 ? (
                 <div className="grid gap-4">
                     {summaries.data.map((item) => (
@@ -193,7 +189,6 @@ export default function History({ summaries }: { summaries: { data: Summary[] } 
                     ))}
                 </div>
             ) : (
-                /* واجهة عدم وجود سجلات المتطابقة تماماً مع التصميم المطلوب */
                 <div className="flex flex-col items-center justify-center py-24 border border-dashed rounded-xl bg-background/50 text-center">
                     <div className="p-4 bg-muted rounded-full mb-4">
                         <FileText className="h-12 w-12 text-muted-foreground" />

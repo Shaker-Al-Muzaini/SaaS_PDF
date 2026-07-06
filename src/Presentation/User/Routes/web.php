@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Plan;
-use Controllers\SubscriptionController;
+use Presentation\User\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;

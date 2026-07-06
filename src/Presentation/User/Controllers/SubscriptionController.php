@@ -1,6 +1,5 @@
 <?php
-
-namespace Controllers;
+namespace Presentation\User\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Plan;
