@@ -2,6 +2,8 @@
 
 use App\Models\Plan;
 use Presentation\User\Controllers\SubscriptionController;
+use Presentation\User\Controllers\PDFSummarizeController;
+use Presentation\User\Controllers\StripeWebhookController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -38,24 +40,31 @@ Route::get('/checkout/{slug}', function ($slug) {
     ]);
 })->name('checkout');
 
-Route::post('/subscription/create-payment-intent', [SubscriptionController::class, 'createPaymentIntent'])
-    ->name('subscription.createPaymentIntent');
-
-Route::post('/subscription/subscribe/{slug}', [SubscriptionController::class, 'subscribe'])
-    ->name('subscription.subscribe');
-
-Route::middleware(['auth', 'verified'])->post('/subscription/create-checkout-session/{slug}', [SubscriptionController::class, 'createCheckoutSession'])->name('subscription.checkout');
+Route::post('/webhook/stripe', [StripeWebhookController::class, 'handle'])
+    ->name('webhook.stripe')
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 
 Route::get('/subscription/success', [SubscriptionController::class, 'success'])
     ->name('subscription.success');
 
-Route::post('/subscription/cancel', [SubscriptionController::class, 'cancel'])
-    ->name('subscription.cancel');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::post('/subscription/create-payment-intent', [SubscriptionController::class, 'createPaymentIntent'])
+        ->name('subscription.createPaymentIntent');
 
-Route::post('/subscription/change-plan', [SubscriptionController::class, 'changePlan'])
-    ->name('subscription.changePlan');
+    Route::post('/subscription/subscribe/{slug}', [SubscriptionController::class, 'subscribe'])
+        ->name('subscription.subscribe');
 
-Route::get('/history', function () {
+    Route::post('/subscription/create-checkout-session/{slug}', [SubscriptionController::class, 'createCheckoutSession'])
+        ->name('subscription.checkout');
+
+    Route::post('/subscription/cancel', [SubscriptionController::class, 'cancel'])
+        ->name('subscription.cancel');
+
+    Route::post('/subscription/change-plan', [SubscriptionController::class, 'changePlan'])
+        ->name('subscription.changePlan');
+});
+
+Route::middleware(['auth', 'verified'])->get('/history', function () {
     $user = auth()->user();
     $summaries = $user->pdfSummaries()->latest()->paginate(10);
 
@@ -63,3 +72,6 @@ Route::get('/history', function () {
         'summaries' => $summaries,
     ]);
 })->name('history');
+
+Route::middleware(['auth', 'verified'])->post('/pdf/summarize', [PDFSummarizeController::class, 'summarize'])
+    ->name('pdf.summarize');

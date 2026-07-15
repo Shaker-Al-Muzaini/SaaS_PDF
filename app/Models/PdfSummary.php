@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 #[Fillable([
     'user_id',
-    'filename',
-    'filesize',
+    'file_name',
+    'file_size',
     'summary',
 ])]
 class PdfSummary extends Model

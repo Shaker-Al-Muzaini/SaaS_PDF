@@ -113,14 +113,13 @@ class SubscriptionController extends Controller
 
             // Create price for the plan
             $price = $stripe->prices->create([
-                'currency' => 'usd',
+                'currency'   => 'usd',
                 'unit_amount' => $plan->price * 100, // Convert to cents
-                'recurring' => [
+                'recurring'  => [
                     'interval' => 'month',
                 ],
                 'product_data' => [
-                    'name' => $plan->name.' Plan',
-                    'des' => $plan->description,
+                    'name' => $plan->name . ' Plan',
                 ],
             ]);
 
@@ -138,11 +137,11 @@ class SubscriptionController extends Controller
 
             // Update user with subscription details
             $user->update([
-                'plan_id' => $plan->id,
+                'plan_id'                => $plan->id,
                 'stripe_subscription_id' => $subscription->id,
-                'pdf_count' => 0,
-                'pdf_count_reset_at' => now()->addMonth(),
-                'subscription_ends_at' => now()->addMonth(),
+                'pdf_count'              => 0,
+                'pdf_count_reset_at'     => now()->addMonth(),
+                'subscription_ends_at'   => now()->addMonth(),
             ]);
 
             return redirect()->route('dashboard')->with('success', 'Subscription activated successfully!');
@@ -224,21 +223,35 @@ class SubscriptionController extends Controller
             return redirect()->route('dashboard')->with('error', 'Invalid session');
         }
 
+        $user = $request->user();
+        if (! $user) {
+            return redirect()->route('login');
+        }
+
         try {
             $session = Session::retrieve($sessionId);
-            $user = $request->user();
+
+            // Verify the session belongs to this user
+            if ((string) $session->metadata->user_id !== (string) $user->id) {
+                Log::warning('Stripe session user mismatch', [
+                    'session_user_id' => $session->metadata->user_id,
+                    'auth_user_id'    => $user->id,
+                ]);
+                return redirect()->route('dashboard')->with('error', 'Session verification failed');
+            }
 
             // Update user with subscription details
             $user->update([
-                'stripe_customer_id' => $session->customer,
+                'stripe_customer_id'     => $session->customer,
                 'stripe_subscription_id' => $session->subscription,
-                'plan_id' => $session->metadata->plan_id,
-                'pdf_count' => 0,
-                'pdf_count_reset_at' => now()->addMonth(),
+                'plan_id'                => $session->metadata->plan_id,
+                'pdf_count'              => 0,
+                'pdf_count_reset_at'     => now()->addMonth(),
             ]);
 
             return redirect()->route('dashboard')->with('success', 'Subscription activated successfully!');
         } catch (\Exception $e) {
+            Log::error('Subscription success handler failed: ' . $e->getMessage());
             return redirect()->route('dashboard')->with('error', 'Failed to activate subscription');
         }
     }
@@ -306,8 +319,8 @@ class SubscriptionController extends Controller
             ]);
 
             $user->update([
-                'plan_id' => $newPlan->id,
-                'pdf_count' => 0,
+                'plan_id'            => $newPlan->id,
+                'pdf_count'          => 0,
                 'pdf_count_reset_at' => now()->addMonth(),
             ]);
 

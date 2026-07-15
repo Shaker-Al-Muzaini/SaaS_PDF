@@ -22,8 +22,9 @@ return [
         'key' => env('RESEND_API_KEY'),
     ],
     'stripe' => [
-        'key' => env('STRIPE_KEY'),
-        'secret' => env('STRIPE_SECRET'),
+        'key'            => env('STRIPE_KEY'),
+        'secret'         => env('STRIPE_SECRET'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
     ],
 
     'ses' => [
@@ -37,6 +38,9 @@ return [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
+    ],
+    'openrouter' => [
+        'key' => env('OPENROUTER_API_KEY'),
     ],
 
 ];

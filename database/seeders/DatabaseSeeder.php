@@ -37,9 +37,9 @@ class DatabaseSeeder extends Seeder
             'email' => 'test2@example.com',
             'password' => bcrypt('password'),
             'role' => 'user',
-            'pdf_count' => 2, // <-- تم التعديل هنا ليتوافق مع الـ Migration
-            'plan_id' => $basicPlan?->id,
-            'pdf_count_rest_at' => now()->addMonth()->format('Y-m-d'),
+            'pdf_count'          => 2,
+            'plan_id'            => $basicPlan?->id,
+            'pdf_count_reset_at' => now()->addMonth()->format('Y-m-d'),
         ]);
     }
 }

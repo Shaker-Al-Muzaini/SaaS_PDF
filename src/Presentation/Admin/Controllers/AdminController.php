@@ -17,7 +17,7 @@ class AdminController extends Controller
         $users = User::with('plan')
             ->withCount('pdfSummaries')
             ->orderBy('created_at', 'desc')
-            ->paginate(20);
+            ->paginate(3);
 
         return Inertia::render('Admin/Views/pages/users', [
             'users' => $users,
