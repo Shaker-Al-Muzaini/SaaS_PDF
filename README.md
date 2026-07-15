@@ -27,11 +27,6 @@
 
 ---
 
-### 🔐 تسجيل مستخدم جديد (Registration)
-![Register](docs/images/register.png)
-
----
-
 ### 📤 رفع ملف PDF (PDF Upload)
 ![Upload](docs/images/upload.png)
 
